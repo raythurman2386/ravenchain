@@ -6,3 +6,4 @@ flask>=2.3.0  # For future API implementation
 requests>=2.31.0  # For node communication
 cryptography>=41.0.0
 python-dotenv>=1.0.0
+black==25.1.0

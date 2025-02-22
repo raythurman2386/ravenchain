@@ -5,6 +5,7 @@ import json
 import pickle
 from datetime import datetime
 
+
 class RavenChainCLI:
     def __init__(self):
         self.blockchain = Blockchain(difficulty=2)
@@ -17,7 +18,7 @@ class RavenChainCLI:
         """Load saved wallets from file"""
         if os.path.exists(self.wallet_file):
             try:
-                with open(self.wallet_file, 'rb') as f:
+                with open(self.wallet_file, "rb") as f:
                     self.wallets = pickle.load(f)
                 print("Wallets loaded successfully!")
             except:
@@ -26,7 +27,7 @@ class RavenChainCLI:
 
     def save_wallets(self):
         """Save wallets to file"""
-        with open(self.wallet_file, 'wb') as f:
+        with open(self.wallet_file, "wb") as f:
             pickle.dump(self.wallets, f)
         print("Wallets saved successfully!")
 
@@ -43,7 +44,7 @@ class RavenChainCLI:
         if name in self.wallets:
             print("Wallet with this name already exists!")
             return
-        
+
         wallet = Wallet()
         self.wallets[name] = wallet
         self.save_wallets()
@@ -107,7 +108,9 @@ class RavenChainCLI:
             return
 
         print("Mining new block...")
-        self.blockchain.mine_pending_transactions(self.wallets[self.current_wallet].address)
+        self.blockchain.mine_pending_transactions(
+            self.wallets[self.current_wallet].address
+        )
         print("Block mined successfully!")
         print("Mining reward will be available after mining the next block.")
 
@@ -188,7 +191,9 @@ class RavenChainCLI:
                 self.verify_blockchain()
             elif choice == "9":
                 if self.current_wallet:
-                    self.print_wallet_info(self.wallets[self.current_wallet], self.current_wallet)
+                    self.print_wallet_info(
+                        self.wallets[self.current_wallet], self.current_wallet
+                    )
                 else:
                     print("No wallet selected!")
             elif choice == "10":
@@ -200,11 +205,13 @@ class RavenChainCLI:
                 print("Invalid choice! Please try again.")
 
             input("\nPress Enter to continue...")
-            os.system('cls' if os.name == 'nt' else 'clear')
+            os.system("cls" if os.name == "nt" else "clear")
+
 
 def main():
     cli = RavenChainCLI()
     cli.run()
+
 
 if __name__ == "__main__":
     main()
