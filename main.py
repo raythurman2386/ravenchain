@@ -97,7 +97,9 @@ class RavenChainCLI:
             print("Insufficient balance!")
             return
 
-        self.blockchain.add_transaction(sender_wallet.address, recipient, amount)
+        self.blockchain.add_transaction(
+            sender_wallet.address, recipient, amount, wallet=sender_wallet
+        )
         print("Transaction added to pending pool!")
         print("Mine a new block to confirm the transaction.")
 
@@ -112,7 +114,7 @@ class RavenChainCLI:
             self.wallets[self.current_wallet].address
         )
         print("Block mined successfully!")
-        print("Mining reward will be available after mining the next block.")
+        print("Mining reward added to your wallet.")
 
     def view_blockchain(self):
         """View all blocks in the blockchain"""
@@ -146,7 +148,8 @@ class RavenChainCLI:
 
     def verify_blockchain(self):
         """Verify blockchain integrity"""
-        is_valid = self.blockchain.is_chain_valid()
+        wallet_registry = {wallet.address: wallet for wallet in self.wallets.values()}
+        is_valid = self.blockchain.is_chain_valid(wallet_registry)
         print(f"\nBlockchain verification: {'VALID' if is_valid else 'INVALID'}")
 
     def show_menu(self):

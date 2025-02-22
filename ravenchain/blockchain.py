@@ -57,28 +57,30 @@ class Blockchain:
 
         :param miner_address: Address where the mining reward will be sent
         """
+        # Create coinbase transaction for mining reward
+        coinbase_tx = Transaction(None, miner_address, self.mining_reward)
+        # Include coinbase and pending transactions in the block
+        block_data = [coinbase_tx] + self.pending_transactions
         block = Block(
             len(self.chain),
             datetime.now(timezone.utc),
-            self.pending_transactions,
+            block_data,
             self.get_latest_block().hash,
         )
         block.mine_block(self.difficulty)
         self.chain.append(block)
-        self.pending_transactions = [
-            Transaction(None, miner_address, self.mining_reward)
-        ]
+        # Clear pending transactions
+        self.pending_transactions = []
 
     def get_balance(self, address):
         """
-        Calculate the balance of a given address. Mining rewards are only counted
-        after confirmation (i.e., when a subsequent block is mined).
+        Calculate the balance of a given address.
 
         :param address: Wallet address to check
         :return: Current balance
         """
         balance = 0
-        for i, block in enumerate(self.chain):
+        for block in self.chain:
             if not isinstance(block.data, list):
                 continue
             for transaction in block.data:
@@ -87,11 +89,7 @@ class Blockchain:
                 if transaction.sender == address:
                     balance -= transaction.amount
                 if transaction.recipient == address:
-                    if transaction.sender is None:  # Mining reward
-                        if i < len(self.chain) - 1:  # Confirmed blocks only
-                            balance += transaction.amount
-                    else:
-                        balance += transaction.amount
+                    balance += transaction.amount
         return balance
 
     def is_chain_valid(self, wallet_registry):
