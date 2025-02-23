@@ -14,6 +14,11 @@ logger = setup_logging("ravenchain.setup")
 def setup_development_environment():
     """Set up the development environment."""
     try:
+        if not Path("venv").exists():
+            logger.info("Creating virtual environment and installing dependencies")
+            os.system("python -m venv venv")
+            os.system("venv/Scripts/activate && pip install -r requirements.txt")
+            logger.info("Created virtual environment and installed dependencies")
         # Create necessary directories
         directories = ["data", "logs", "backups", "certs", "config"]
 
@@ -53,7 +58,8 @@ LOG_JSON=1
         if not Path("certs/dev.key").exists():
             os.system(
                 "openssl req -x509 -newkey rsa:4096 -keyout certs/dev.key "
-                "-out certs/dev.crt -days 365 -nodes -subj '/CN=localhost'"
+                "-out certs/dev.crt -days 365 -nodes "
+                "-subj /CN=localhost/O=Development/OU=Engineering/C=US"
             )
             logger.info("Generated development SSL certificates")
 
