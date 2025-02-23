@@ -28,12 +28,13 @@ A modern, Python-based blockchain implementation focusing on simplicity, securit
 
 - **Language**: Python 3.13+
 - **Cryptography**: `ecdsa`, `hashlib`
-- **Storage**: File-based (to be upgraded to LevelDB)
+- **Storage**: PostgreSQL for block explorer and indexing
+- **Backend**: FastAPI for REST API endpoints
+- **Frontend**: React 19 with TypeScript
 - **Future Stack**:
-  - FastAPI for REST API
-  - SQLAlchemy for database management
   - WebSocket for real-time updates
-  - Vue.js for block explorer frontend
+  - Redis for caching
+  - Elasticsearch for block/transaction search (optional)
 
 ## 🏗 Project Structure
 
@@ -45,13 +46,22 @@ ravenchain/
 │   ├── blockchain.py       # Main blockchain logic
 │   ├── transaction.py      # Transaction handling
 │   └── wallet.py           # Wallet management
-├── config/                  # Configuration
-│   └── settings.py         # Global settings
-├── tests/                  # Test suite
-├── utils/                  # Utility functions
-├── scripts/                # Maintenance scripts
-├── requirements.txt        # Dependencies
-└── README.md              # Documentation
+├── api/                    # FastAPI backend
+│   ├── __init__.py
+│   ├── main.py            # API entry point
+│   ├── routes/            # API routes
+│   └── models/            # Pydantic models
+├── frontend/              # React 19 frontend
+│   ├── src/
+│   ├── public/
+│   ├── package.json
+│   └── tsconfig.json
+├── config/                # Configuration
+│   └── settings.py        # Global settings
+├── tests/                # Test suite
+├── utils/                # Utility functions
+├── docker-compose.yml    # Docker configuration
+└── README.md            # Documentation
 ```
 
 ## 🚀 Quick Start
@@ -124,7 +134,7 @@ docker-compose run --rm ravenchain pytest --cov=ravenchain
 - [ ] Documentation improvements
 
 ### Phase 2: Data Persistence & API (Next)
-- [ ] Implement LevelDB for blockchain storage
+- [ ] Implement PostgreSQL for blockchain storage
 - [ ] Design and implement FastAPI REST API
   - [ ] Block endpoints
   - [ ] Transaction endpoints

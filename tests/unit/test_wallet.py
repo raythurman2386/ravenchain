@@ -49,9 +49,7 @@ def test_signature_verification():
 
     # Test with incorrect public key
     incorrect_wallet = Wallet()
-    assert not Wallet.verify_signature(
-        incorrect_wallet.public_key, signature, transaction
-    )
+    assert not Wallet.verify_signature(incorrect_wallet.public_key, signature, transaction)
 
 
 def test_signature_verification_with_tampered_transaction():
@@ -62,9 +60,7 @@ def test_signature_verification_with_tampered_transaction():
     # Tamper with the transaction
     tampered_transaction = Transaction(wallet.address, "recipient_address", 200)
 
-    assert not Wallet.verify_signature(
-        wallet.public_key, signature, tampered_transaction
-    )
+    assert not Wallet.verify_signature(wallet.public_key, signature, tampered_transaction)
 
 
 @pytest.mark.parametrize("curve", [ecdsa.SECP256k1, ecdsa.NIST192p, ecdsa.NIST224p])

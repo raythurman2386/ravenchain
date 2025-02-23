@@ -27,9 +27,7 @@ class Wallet:
 
     def sign_transaction(self, transaction):
         """Sign a transaction with the wallet's private key"""
-        transaction_string = (
-            f"{transaction.sender}{transaction.recipient}{transaction.amount}"
-        )
+        transaction_string = f"{transaction.sender}{transaction.recipient}{transaction.amount}"
         return self._private_key.sign(transaction_string.encode())
 
     @property
@@ -40,12 +38,8 @@ class Wallet:
     @staticmethod
     def verify_signature(public_key, signature, transaction):
         """Verify a transaction signature"""
-        verifying_key = ecdsa.VerifyingKey.from_string(
-            public_key, curve=ecdsa.SECP256k1
-        )
-        transaction_string = (
-            f"{transaction.sender}{transaction.recipient}{transaction.amount}"
-        )
+        verifying_key = ecdsa.VerifyingKey.from_string(public_key, curve=ecdsa.SECP256k1)
+        transaction_string = f"{transaction.sender}{transaction.recipient}{transaction.amount}"
         try:
             return verifying_key.verify(signature, transaction_string.encode())
         except ecdsa.BadSignatureError:

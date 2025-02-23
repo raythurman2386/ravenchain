@@ -43,6 +43,4 @@ def sample_transaction(test_wallets):
 @pytest.fixture
 def sample_block():
     """Create a sample block for testing"""
-    return Block(
-        index=1, timestamp=datetime.now(), data="Test Block", previous_hash="0000"
-    )
+    return Block(index=1, timestamp=datetime.now(), data="Test Block", previous_hash="0000")
