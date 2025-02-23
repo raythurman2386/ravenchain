@@ -20,6 +20,10 @@ wheels/
 .installed.cfg
 *.egg
 .pytest_cache/
+backups/
+logs/
+certs/
+data/
 
 # Virtual Environment
 venv/
@@ -38,6 +42,8 @@ ENV/
 # Local development settings
 .env
 .env.local
+.env.development
+.env.production
 
 # System Files
 .DS_Store
