@@ -65,9 +65,20 @@ LOG_JSON=1
             # Create pre-commit hook
             pre_commit = hooks_dir / "pre-commit"
             pre_commit_content = """#!/bin/sh
-# Activate virtual environment and run tests
+# Activate virtual environment
 . "./venv/Scripts/activate"
-python -m pytest tests/
+
+echo "Running Black formatter..."
+python -m black .
+
+# Run tests if formatting passes
+if [ $? -eq 0 ]; then
+    echo "Running tests..."
+    python -m pytest tests/
+else
+    echo "Black formatting failed. Please fix the formatting issues."
+    exit 1
+fi
 """
             pre_commit.write_text(pre_commit_content)
             pre_commit.chmod(0o755)
