@@ -1,51 +1,69 @@
 import pytest
+from datetime import datetime, timezone
+from ravenchain.transaction import Transaction
 from ravenchain.block import Block
-from datetime import datetime
 
 
-def test_block_creation(sample_block):
-    """Test basic block creation"""
-    assert sample_block.index == 1
-    assert isinstance(sample_block.timestamp, datetime)
-    assert sample_block.data == "Test Block"
-    assert sample_block.previous_hash == "0000"
-    assert sample_block.hash is not None
-
-
-def test_block_hash_calculation():
-    """Test that block hash is calculated correctly"""
-    block = Block(1, datetime.now(), "Test Data", "0000")
-    initial_hash = block.hash
-
-    # Hash should be a string of 64 characters (SHA-256)
-    assert isinstance(block.hash, str)
+def test_block_initialization():
+    tx = Transaction("sender", "recipient", 10)
+    block = Block(0, data=[tx])
+    assert block.index == 0
+    assert isinstance(block.timestamp, datetime)
+    assert block.data == [tx]
+    assert block.previous_hash == "0"
     assert len(block.hash) == 64
 
-    # Hash should be deterministic
-    assert block.hash == block.calculate_hash()
 
-    # Hash should change when data changes
-    block.data = "Modified Data"
-    assert block.calculate_hash() != initial_hash
+def test_block_initialization_with_invalid_index():
+    with pytest.raises(ValueError):
+        Block(-1)
 
 
-def test_block_mining():
-    """Test block mining with proof of work"""
-    block = Block(1, datetime.now(), "Test Data", "0000")
-    difficulty = 2
+def test_block_initialization_with_invalid_data():
+    with pytest.raises(ValueError):
+        Block(0, data=["not a transaction"])
+
+
+def test_calculate_hash():
+    tx = Transaction("sender", "recipient", 10)
+    block = Block(0, data=[tx])
+    original_hash = block.hash
+    block.nonce += 1
+    new_hash = block.calculate_hash()
+    assert new_hash != original_hash
+    assert len(new_hash) == 64
+
+
+def test_mine_block():
+    tx = Transaction("sender", "recipient", 10)
+    block = Block(0, data=[tx])
+    difficulty = 4
     block.mine_block(difficulty)
-
-    # Hash should start with the required number of zeros
     assert block.hash.startswith("0" * difficulty)
 
-    # Nonce should have been incremented
-    assert block.nonce > 0
+
+def test_to_dict():
+    tx = Transaction("sender", "recipient", 10)
+    block = Block(0, data=[tx])
+    block_dict = block.to_dict()
+    assert isinstance(block_dict, dict)
+    assert "index" in block_dict
+    assert "timestamp" in block_dict
+    assert "data" in block_dict
+    assert "previous_hash" in block_dict
+    assert "nonce" in block_dict
+    assert "hash" in block_dict
 
 
-def test_invalid_block_parameters():
-    """Test block creation with invalid parameters"""
-    with pytest.raises(Exception):
-        Block(None, datetime.now(), "Test", "0000")
+def test_from_dict():
+    tx = Transaction("sender", "recipient", 10)
+    original_block = Block(0, data=[tx])
+    block_dict = original_block.to_dict()
+    reconstructed_block = Block.from_dict(block_dict)
 
-    with pytest.raises(Exception):
-        Block(-1, datetime.now(), "Test", "0000")
+    assert reconstructed_block.index == original_block.index
+    assert reconstructed_block.timestamp == original_block.timestamp
+    assert reconstructed_block.previous_hash == original_block.previous_hash
+    assert reconstructed_block.nonce == original_block.nonce
+    assert reconstructed_block.hash == original_block.hash
+    assert len(reconstructed_block.data) == len(original_block.data)

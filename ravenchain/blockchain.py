@@ -81,11 +81,7 @@ class Blockchain:
         """
         balance = 0
         for block in self.chain:
-            if not isinstance(block.data, list):
-                continue
             for transaction in block.data:
-                if not isinstance(transaction, Transaction):
-                    continue
                 if transaction.sender == address:
                     balance -= transaction.amount
                 if transaction.recipient == address:

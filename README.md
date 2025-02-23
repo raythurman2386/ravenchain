@@ -26,7 +26,7 @@ A modern, Python-based blockchain implementation focusing on simplicity, securit
 
 ## 🛠 Technology Stack
 
-- **Language**: Python 3.7+
+- **Language**: Python 3.13+
 - **Cryptography**: `ecdsa`, `hashlib`
 - **Storage**: File-based (to be upgraded to LevelDB)
 - **Future Stack**:
@@ -52,6 +52,65 @@ ravenchain/
 ├── scripts/                # Maintenance scripts
 ├── requirements.txt        # Dependencies
 └── README.md              # Documentation
+```
+
+## 🚀 Quick Start
+
+### Prerequisites
+
+- Python 3.13 or higher
+- pip (Python package installer)
+
+OR
+
+- Docker
+- Docker Compose
+
+### Installation
+
+#### Using Python (Traditional Setup)
+
+```bash
+# Clone the repository
+git clone https://github.com/yourusername/ravenchain.git
+cd ravenchain
+
+# Create and activate virtual environment
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+
+# Install dependencies
+pip install -e .
+```
+
+#### Using Docker 🐳
+
+```bash
+# Clone the repository
+git clone https://github.com/yourusername/ravenchain.git
+cd ravenchain
+
+# Build and start the containers
+docker-compose up --build
+
+# Or run in detached mode
+docker-compose up -d
+```
+
+The Docker setup provides:
+- Isolated development environment
+- Consistent dependencies across platforms
+- Easy setup for future features (API, database)
+- Production-ready container configuration
+
+### Running Tests with Docker
+
+```bash
+# Run tests in a new container
+docker-compose run --rm ravenchain pytest
+
+# Run tests with coverage
+docker-compose run --rm ravenchain pytest --cov=ravenchain
 ```
 
 ## 🎯 Roadmap
@@ -106,49 +165,6 @@ ravenchain/
 - [ ] Wallet GUI application
 - [ ] Network monitoring tools
 - [ ] Development tools and SDKs
-
-## 🚀 Getting Started
-
-### Prerequisites
-- Python 3.7 or higher
-- pip package manager
-
-### Installation
-1. Clone the repository:
-```bash
-git clone https://github.com/raythurman2386/ravenchain.git
-cd ravenchain
-```
-
-2. Create and activate a virtual environment:
-```bash
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-```
-
-3. Install dependencies:
-```bash
-pip install -r requirements.txt
-```
-
-### Usage
-
-Run the CLI interface:
-```bash
-python main.py
-```
-
-Available commands:
-1. Create new wallet
-2. List wallets
-3. Select wallet
-4. Send RVN
-5. Mine block
-6. View blockchain
-7. View pending transactions
-8. Verify blockchain
-9. View current wallet
-10. Save wallets
 
 ## 🧪 Testing
 

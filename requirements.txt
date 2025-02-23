@@ -2,7 +2,7 @@
 ecdsa>=0.18.0
 base58>=2.1.1
 pytest>=7.4.0
-flask>=2.3.0  # For future API implementation
+fastapi>=0.115.8
 requests>=2.31.0  # For node communication
 cryptography>=41.0.0
 python-dotenv>=1.0.0

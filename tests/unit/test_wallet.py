@@ -1,58 +1,81 @@
+import ecdsa
 import pytest
 from ravenchain.wallet import Wallet
 from ravenchain.transaction import Transaction
 
 
-def test_wallet_creation(wallet):
-    """Test wallet initialization"""
+def test_wallet_creation():
+    wallet = Wallet()
     assert wallet.address is not None
     assert len(wallet.address) > 0
     assert wallet.address.startswith("1")  # Bitcoin-style address format
 
 
+def test_address_generation():
+    wallet = Wallet()
+    address1 = wallet.address
+    address2 = wallet._generate_address()
+    assert address1 == address2  # Address should be cached
+
+
+def test_public_key():
+    wallet = Wallet()
+    public_key = wallet.public_key
+    assert isinstance(public_key, bytes)
+    assert len(public_key) == 64  # SECP256k1 public key is 64 bytes
+
+
 def test_wallet_uniqueness():
-    """Test that each wallet gets a unique address"""
     wallet1 = Wallet()
     wallet2 = Wallet()
     assert wallet1.address != wallet2.address
+    assert wallet1.public_key != wallet2.public_key
 
 
-def test_transaction_signing(wallet, sample_transaction):
-    """Test transaction signing and verification"""
-    # Sign transaction
-    signature = wallet.sign_transaction(sample_transaction)
-    assert signature is not None
-
-    # Verify signature with correct public key
-    assert Wallet.verify_signature(
-        wallet.get_public_key(), signature, sample_transaction
-    )
-
-    # Verify signature fails with different public key
-    different_wallet = Wallet()
-    assert not Wallet.verify_signature(
-        different_wallet.get_public_key(), signature, sample_transaction
-    )
-
-
-def test_address_generation():
-    """Test wallet address generation format"""
+def test_transaction_signing():
     wallet = Wallet()
-    address = wallet.address
-
-    # Check address format
-    assert isinstance(address, str)
-    assert len(address) >= 26  # Standard Bitcoin address length
-    assert len(address) <= 35
-    assert address.startswith("1")  # Mainnet address
-
-    # Check address uniqueness
-    addresses = [Wallet().address for _ in range(10)]
-    assert len(set(addresses)) == 10  # All addresses should be unique
+    transaction = Transaction(wallet.address, "recipient_address", 100)
+    signature = wallet.sign_transaction(transaction)
+    assert signature is not None
+    assert len(signature) > 0
 
 
-def test_public_key_consistency(wallet):
-    """Test that public key remains consistent"""
-    public_key1 = wallet.get_public_key()
-    public_key2 = wallet.get_public_key()
-    assert public_key1 == public_key2
+def test_signature_verification():
+    wallet = Wallet()
+    transaction = Transaction(wallet.address, "recipient_address", 100)
+    signature = wallet.sign_transaction(transaction)
+
+    assert Wallet.verify_signature(wallet.public_key, signature, transaction)
+
+    # Test with incorrect public key
+    incorrect_wallet = Wallet()
+    assert not Wallet.verify_signature(
+        incorrect_wallet.public_key, signature, transaction
+    )
+
+
+def test_signature_verification_with_tampered_transaction():
+    wallet = Wallet()
+    transaction = Transaction(wallet.address, "recipient_address", 100)
+    signature = wallet.sign_transaction(transaction)
+
+    # Tamper with the transaction
+    tampered_transaction = Transaction(wallet.address, "recipient_address", 200)
+
+    assert not Wallet.verify_signature(
+        wallet.public_key, signature, tampered_transaction
+    )
+
+
+@pytest.mark.parametrize("curve", [ecdsa.SECP256k1, ecdsa.NIST192p, ecdsa.NIST224p])
+def test_different_curves(curve):
+    class TestWallet(Wallet):
+        def __init__(self, curve):
+            self._private_key = ecdsa.SigningKey.generate(curve=curve)
+            self._public_key = self._private_key.get_verifying_key()
+            self._address = None
+            self.address = self._generate_address()
+
+    wallet = TestWallet(curve)
+    assert wallet.address is not None
+    assert len(wallet.address) > 0

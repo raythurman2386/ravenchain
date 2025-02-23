@@ -1,3 +1,8 @@
+# Git
+.git
+.gitignore
+.github
+
 # Python
 __pycache__/
 *.py[cod]
@@ -19,12 +24,11 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
-.pytest_cache/
 
 # Virtual Environment
 venv/
-env/
 ENV/
+env/
 
 # IDE
 .idea/
@@ -32,17 +36,21 @@ ENV/
 *.swp
 *.swo
 
-# Logs
+# Testing
+.coverage
+htmlcov/
+.tox/
+.pytest_cache/
+
+# Project specific
 *.log
-
-# Local development settings
+data/
+wallets/
+*.db
 .env
-.env.local
+.env.*
 
-# System Files
-.DS_Store
-Thumbs.db
-
-# Wallets
-wallets.dat
-*.dat
+# Docker
+Dockerfile
+docker-compose.yml
+.docker/
