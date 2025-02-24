@@ -52,3 +52,7 @@ Thumbs.db
 # Wallets
 wallets.dat
 *.dat
+
+# Coverage
+coverage.xml
+htmlcov/
