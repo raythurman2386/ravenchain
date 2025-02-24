@@ -9,7 +9,9 @@ class Block:
         """Initialize a block with its attributes"""
         if index is None or index < 0:
             raise ValueError("Block index must be a non-negative integer")
-        if not isinstance(data, list) or not all(isinstance(tx, Transaction) for tx in data):
+        if data is not None and (
+            not isinstance(data, list) or not all(isinstance(tx, Transaction) for tx in data)
+        ):
             raise ValueError("Block data must be a list of Transaction objects")
 
         self.index = index

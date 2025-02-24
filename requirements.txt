@@ -7,3 +7,6 @@ requests>=2.31.0  # For node communication
 cryptography>=41.0.0
 python-dotenv>=1.0.0
 black==25.1.0
+uvicorn>=0.34.0
+sqlalchemy>=2.0.38
+psycopg2-binary>=2.9.10

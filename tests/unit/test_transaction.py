@@ -1,6 +1,21 @@
 import pytest
 from ravenchain.transaction import Transaction
+from ravenchain.wallet import Wallet
 from datetime import datetime
+
+
+@pytest.fixture
+def wallet():
+    w = Wallet()
+    w.create_wallet()
+    return w
+
+
+@pytest.fixture
+def sample_transaction(wallet):
+    recipient = Wallet()
+    recipient.create_wallet()
+    return Transaction(wallet.address, recipient.address, 10.0)
 
 
 def test_transaction_creation(sample_transaction):
@@ -27,20 +42,26 @@ def test_transaction_to_dict(sample_transaction):
 
 def test_mining_reward_transaction():
     """Test creation of mining reward transaction"""
-    recipient_address = "test_address"
+    recipient = Wallet()
+    recipient.create_wallet()
     reward_amount = 10.0
 
-    transaction = Transaction(None, recipient_address, reward_amount)
+    transaction = Transaction(None, recipient.address, reward_amount)
 
     assert transaction.sender is None
-    assert transaction.recipient == recipient_address
+    assert transaction.recipient == recipient.address
     assert transaction.amount == reward_amount
 
 
 def test_invalid_transaction_amount():
     """Test transaction with invalid amount"""
-    with pytest.raises(ValueError):
-        Transaction("sender", "recipient", -10.0)
+    wallet = Wallet()
+    wallet.create_wallet()
+    recipient = Wallet()
+    recipient.create_wallet()
 
     with pytest.raises(ValueError):
-        Transaction("sender", "recipient", 0)
+        Transaction(wallet.address, recipient.address, -10.0)
+
+    with pytest.raises(ValueError):
+        Transaction(wallet.address, recipient.address, 0)

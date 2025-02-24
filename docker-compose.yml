@@ -1,6 +1,8 @@
 services:
   ravenchain:
-    build: .
+    build: 
+      context: .
+      target: core
     volumes:
       - .:/app
       - blockchain_data:/app/data
@@ -18,92 +20,58 @@ services:
     stdin_open: true   # Keep STDIN open
     restart: unless-stopped
 
-  # FastAPI Backend (Uncomment when ready)
-  # api:
-  #   build: 
-  #     context: .
-  #     dockerfile: Dockerfile
-  #     target: api  # Using multi-stage build for API
-  #   volumes:
-  #     - .:/app
-  #     - logs:/app/logs
-  #   ports:
-  #     - "8000:8000"
-  #   environment:
-  #     - ENVIRONMENT=development
-  #     - DEBUG=1
-  #     - DATABASE_URL=postgresql://ravenchain:ravenchain@db:5432/ravenchain
-  #     - RAVENCHAIN_LOGS_DIR=/app/logs
-  #     - LOG_LEVEL=DEBUG
-  #     - LOG_JSON=1
-  #     - CORS_ORIGINS=http://localhost:3000  # Allow frontend in dev
-  #     - MAX_WORKERS=4  # Uvicorn workers
-  #   command: uvicorn api.main:app --host 0.0.0.0 --port 8000 --reload --workers 4
-  #   healthcheck:
-  #     test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
-  #     interval: 30s
-  #     timeout: 10s
-  #     retries: 3
-  #   depends_on:
-  #     db:
-  #       condition: service_healthy
-  #     ravenchain:
-  #       condition: service_started
+  api:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+      target: api
+    volumes:
+      - .:/app
+      - logs:/app/logs
+    ports:
+      - "8000:8000"
+    environment:
+      - ENVIRONMENT=development
+      - DEBUG=1
+      - RAVENCHAIN_DB_HOST=db
+      - RAVENCHAIN_DB_PORT=5432
+      - RAVENCHAIN_DB_NAME=ravenchain
+      - RAVENCHAIN_DB_USER=postgres
+      - RAVENCHAIN_DB_PASS=admin
+      - RAVENCHAIN_LOGS_DIR=/app/logs
+      - LOG_LEVEL=DEBUG
+      - LOG_JSON=1
+      - CORS_ORIGINS=http://localhost:3000
+      - MAX_WORKERS=4
+    command: uvicorn api.main:app --host 0.0.0.0 --port 8000 --reload --workers 4
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    depends_on:
+      db:
+        condition: service_healthy
+      ravenchain:
+        condition: service_started
 
-  # React 19 Frontend (Uncomment when ready)
-  # frontend:
-  #   build:
-  #     context: ./frontend
-  #     dockerfile: Dockerfile.frontend
-  #     target: development  # Using multi-stage build for frontend
-  #   volumes:
-  #     - ./frontend:/app
-  #     - /app/node_modules
-  #   ports:
-  #     - "3000:3000"
-  #   environment:
-  #     - NODE_ENV=development
-  #     - VITE_API_URL=http://localhost:8000  # Using Vite for React 19
-  #     - WATCHPACK_POLLING=true  # Better hot reload in Docker
-  #     - VITE_BLOCKCHAIN_WS=ws://localhost:8000/ws  # WebSocket for real-time updates
-  #     - VITE_ENABLE_DEVTOOLS=true  # React DevTools
-  #   command: npm run dev
-  #   healthcheck:
-  #     test: ["CMD", "curl", "-f", "http://localhost:3000"]
-  #     interval: 30s
-  #     timeout: 10s
-  #     retries: 3
-  #   depends_on:
-  #     api:
-  #       condition: service_healthy
-
-  # PostgreSQL 17 Database (Uncomment when ready)
-  # db:
-  #   image: postgres:17-alpine
-  #   volumes:
-  #     - postgres_data:/var/lib/postgresql/data/
-  #     - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro  # Initial schema
-  #   environment:
-  #     - POSTGRES_USER=ravenchain
-  #     - POSTGRES_PASSWORD=ravenchain
-  #     - POSTGRES_DB=ravenchain
-  #     - PGDATA=/var/lib/postgresql/data/pgdata  # Custom data directory
-  #   ports:
-  #     - "5432:5432"
-  #   healthcheck:
-  #     test: ["CMD-SHELL", "pg_isready -U ravenchain"]
-  #     interval: 5s
-  #     timeout: 5s
-  #     retries: 5
-  #   command: >
-  #     postgres
-  #     -c shared_buffers=256MB
-  #     -c max_connections=200
-  #     -c effective_cache_size=1GB
-  #     -c work_mem=16MB
-  #   shm_size: '256mb'  # Shared memory size for better performance
+  db:
+    image: postgres:17-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_DB=ravenchain
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 volumes:
   blockchain_data:
   logs:
-  # postgres_data:  # Uncomment when adding database
+  postgres_data:

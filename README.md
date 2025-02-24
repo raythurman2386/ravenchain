@@ -13,13 +13,14 @@ A modern, Python-based blockchain implementation focusing on simplicity, securit
 - ✅ Persistent wallet storage
 - ✅ Chain validation and integrity checking
 - ✅ Mining rewards system
+- ✅ FastAPI-based REST API
+- ✅ Database persistence with PostgreSQL
+- ✅ Docker containerization
 
 ### Planned Features
 - 🔄 Peer-to-peer networking
-- 🌐 FastAPI-based REST API
 - 📊 Block explorer web interface
 - 📜 Smart contract support
-- 💾 Database persistence
 - 🔍 UTXO model implementation
 - 🔒 Enhanced security features
 - ⚡ Performance optimizations
@@ -28,9 +29,9 @@ A modern, Python-based blockchain implementation focusing on simplicity, securit
 
 - **Language**: Python 3.13+
 - **Cryptography**: `ecdsa`, `hashlib`
-- **Storage**: PostgreSQL for block explorer and indexing
+- **Storage**: PostgreSQL for blockchain persistence
 - **Backend**: FastAPI for REST API endpoints
-- **Frontend**: React 19 with TypeScript
+- **Frontend**: React 19 with TypeScript (planned)
 - **Future Stack**:
   - WebSocket for real-time updates
   - Redis for caching
@@ -49,20 +50,21 @@ ravenchain/
 ├── api/                    # FastAPI backend
 │   ├── __init__.py
 │   ├── main.py            # API entry point
-│   ├── routes/            # API routes
-│   └── models/            # Pydantic models
-├── frontend/              # React 19 frontend
-│   ├── src/
-│   ├── public/
-│   ├── package.json
-│   └── tsconfig.json
+│   ├── routes/            # API route handlers
+│   │   ├── block_routes.py
+│   │   ├── mining_routes.py
+│   │   ├── transaction_routes.py
+│   │   └── wallet_routes.py
+│   └── database/          # Database models and config
+│       └── models.py
 ├── config/                # Configuration
-│   └── settings.py        # Global settings
-├── tests/                # Test suite
-├── utils/                # Utility functions
-├── docker-compose.yml    # Docker configuration
-└── README.md            # Documentation
-```
+│   ├── settings.py        # App settings
+│   └── logging.py         # Logging setup
+├── scripts/               # Utility scripts
+├── tests/                 # Test suite
+├── Dockerfile            # Docker build file
+├── docker-compose.yml    # Docker services config
+└── requirements.txt      # Python dependencies
 
 ## 🚀 Quick Start
 
@@ -130,17 +132,17 @@ docker-compose run --rm ravenchain pytest --cov=ravenchain
 - [x] Wallet management system
 - [x] Command-line interface
 - [x] Transaction handling
-- [ ] Unit test coverage
-- [ ] Documentation improvements
+- [x] Unit test coverage
+- [x] Documentation improvements
 
 ### Phase 2: Data Persistence & API (Next)
-- [ ] Implement PostgreSQL for blockchain storage
-- [ ] Design and implement FastAPI REST API
-  - [ ] Block endpoints
-  - [ ] Transaction endpoints
-  - [ ] Wallet endpoints
-  - [ ] Mining endpoints
-- [ ] API documentation with Swagger/OpenAPI
+- [x] Implement PostgreSQL for blockchain storage
+- [x] Design and implement FastAPI REST API
+  - [x] Block endpoints
+  - [x] Transaction endpoints
+  - [x] Wallet endpoints
+  - [x] Mining endpoints
+- [x] API documentation with Swagger/OpenAPI
 - [ ] Request rate limiting
 - [ ] API authentication system
 
