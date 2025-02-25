@@ -22,7 +22,9 @@ def get_wallet_manager():
 @walletRouter.post("/wallets")
 @limiter.limit("20/minute")
 async def create_wallet(
-    request: Request, wallet_data: WalletCreate, wallet_manager: Wallet = Depends(get_wallet_manager)
+    request: Request,
+    wallet_data: WalletCreate,
+    wallet_manager: Wallet = Depends(get_wallet_manager),
 ):
     try:
         wallet = wallet_manager.create_wallet(wallet_data.passphrase)

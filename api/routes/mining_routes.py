@@ -13,7 +13,11 @@ miningRouter = APIRouter()
 
 @miningRouter.post("/mine")
 @limiter.limit("5/minute")  # Strict limit for mining operations
-async def mine_block(request: Request, mining_request: MiningRequest, blockchain: Blockchain = Depends(get_blockchain)):
+async def mine_block(
+    request: Request,
+    mining_request: MiningRequest,
+    blockchain: Blockchain = Depends(get_blockchain),
+):
     try:
         blockchain.mine_pending_transactions(mining_request.miner_address)
         return {"message": "Block mined successfully"}

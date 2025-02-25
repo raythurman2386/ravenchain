@@ -34,13 +34,11 @@ async def get_all_transactions(request: Request, blockchain: Blockchain = Depend
 async def create_transaction(
     request: Request,
     tx_request: CreateTransactionRequest,
-    blockchain: Blockchain = Depends(get_blockchain)
+    blockchain: Blockchain = Depends(get_blockchain),
 ):
     try:
         transaction = Transaction(
-            tx_request.sender_address,
-            tx_request.recipient_address,
-            tx_request.amount
+            tx_request.sender_address, tx_request.recipient_address, tx_request.amount
         )
         transaction.sign_transaction(tx_request.sender_private_key)
         blockchain.add_pending_transaction(transaction)

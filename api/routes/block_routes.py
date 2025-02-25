@@ -36,7 +36,9 @@ async def get_latest_block(request: Request, blockchain: Blockchain = Depends(ge
 
 @blockRouter.get("/blocks/{block_hash}")
 @limiter.limit("10/minute")
-async def get_block(request: Request, block_hash: str, blockchain: Blockchain = Depends(get_blockchain)):
+async def get_block(
+    request: Request, block_hash: str, blockchain: Blockchain = Depends(get_blockchain)
+):
     """Get a specific block by its hash"""
     try:
         for block in blockchain.chain:
