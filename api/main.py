@@ -1,9 +1,14 @@
 from contextlib import asynccontextmanager
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
+from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import inspect, text
 from api.routes import block_routes, mining_routes, transaction_routes, wallet_routes
 from api.database.models import Base
-from api.dependencies import engine, logger, initialize_blockchain
+from api.dependencies import engine, logger, initialize_blockchain, limiter
+from config.settings import settings
+from slowapi.errors import RateLimitExceeded
+from slowapi.middleware import SlowAPIMiddleware
+from slowapi import _rate_limit_exceeded_handler
 
 
 @asynccontextmanager
@@ -30,16 +35,37 @@ async def lifespan(app: FastAPI):
             logger.error(f"Error disposing engine: {str(e)}")
 
 
-app = FastAPI(lifespan=lifespan)
+app = FastAPI(
+    title=settings.APP_NAME,
+    version=settings.APP_VERSION,
+    description=settings.APP_DESCRIPTION,
+    lifespan=lifespan,
+)
+
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+
+# Add middlewares
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=settings.CORS_ORIGINS,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+app.add_middleware(SlowAPIMiddleware)
 
 
 @app.get("/api/health", tags=["health"])
-async def health_check():
+@limiter.limit("5/minute")
+async def health_check(request: Request):
     logger.info("Health check endpoint called")
     return {"status": "healthy"}
 
 
-app.include_router(block_routes.blockRouter, prefix="/api/v1", tags=["blocks"])
-app.include_router(mining_routes.miningRouter, prefix="/api/v1", tags=["mining"])
-app.include_router(transaction_routes.transactionRouter, prefix="/api/v1", tags=["transactions"])
-app.include_router(wallet_routes.walletRouter, prefix="/api/v1", tags=["wallets"])
+app.include_router(block_routes.blockRouter, prefix=settings.API_PREFIX, tags=["blocks"])
+app.include_router(mining_routes.miningRouter, prefix=settings.API_PREFIX, tags=["mining"])
+app.include_router(
+    transaction_routes.transactionRouter, prefix=settings.API_PREFIX, tags=["transactions"]
+)
+app.include_router(wallet_routes.walletRouter, prefix=settings.API_PREFIX, tags=["wallets"])

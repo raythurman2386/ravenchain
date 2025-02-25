@@ -4,6 +4,12 @@ from config.settings import settings
 from config.logging import setup_logging
 from ravenchain import Blockchain
 import os
+from slowapi import Limiter
+from slowapi.util import get_remote_address
+
+# Create a single limiter instance to be shared across the application
+limiter = Limiter(key_func=get_remote_address, default_limits=["10/minute"])
+
 
 # Setup logging
 logger = setup_logging(

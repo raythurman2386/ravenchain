@@ -15,6 +15,13 @@ WALLET_PATH = "wallet.dat"
 
 
 class Settings:
+    APP_VERSION: str = "1.0.0"
+    APP_NAME: str = "RavenChain"
+    APP_DESCRIPTION: str = (
+        "A modern, Python-based blockchain implementation focusing on simplicity, security, and scalability."
+    )
+    CORS_ORIGINS: list[str] = ["http://localhost:5173", "http://localhost:3000"]
+    API_PREFIX: str = "/api/v1"
     DB_HOST = os.getenv("RAVENCHAIN_DB_HOST", "localhost")
     DB_PORT = os.getenv("RAVENCHAIN_DB_PORT", 5432)
     DB_NAME = os.getenv("RAVENCHAIN_DB_NAME", "ravenchain")

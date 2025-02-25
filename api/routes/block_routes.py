@@ -1,5 +1,5 @@
-from fastapi import APIRouter, Depends, HTTPException
-from api.dependencies import logger, get_blockchain
+from fastapi import APIRouter, Depends, HTTPException, Request
+from api.dependencies import logger, get_blockchain, limiter
 from ravenchain.blockchain import Blockchain
 
 
@@ -7,7 +7,8 @@ blockRouter = APIRouter()
 
 
 @blockRouter.get("/blocks")
-async def get_all_blocks(blockchain: Blockchain = Depends(get_blockchain)):
+@limiter.limit("30/minute")
+async def get_all_blocks(request: Request, blockchain: Blockchain = Depends(get_blockchain)):
     """Get all blocks in the blockchain"""
     try:
         return [block.to_dict() for block in blockchain.chain]
@@ -17,7 +18,8 @@ async def get_all_blocks(blockchain: Blockchain = Depends(get_blockchain)):
 
 
 @blockRouter.get("/blocks/latest")
-async def get_latest_block(blockchain: Blockchain = Depends(get_blockchain)):
+@limiter.limit("20/minute")
+async def get_latest_block(request: Request, blockchain: Blockchain = Depends(get_blockchain)):
     """Get the most recent block in the chain"""
     try:
         latest = blockchain.get_latest_block()
@@ -33,7 +35,8 @@ async def get_latest_block(blockchain: Blockchain = Depends(get_blockchain)):
 
 
 @blockRouter.get("/blocks/{block_hash}")
-async def get_block(block_hash: str, blockchain: Blockchain = Depends(get_blockchain)):
+@limiter.limit("10/minute")
+async def get_block(request: Request, block_hash: str, blockchain: Blockchain = Depends(get_blockchain)):
     """Get a specific block by its hash"""
     try:
         for block in blockchain.chain:

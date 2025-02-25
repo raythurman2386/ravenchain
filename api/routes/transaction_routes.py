@@ -1,6 +1,6 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from pydantic import BaseModel
-from api.dependencies import blockchain
+from api.dependencies import blockchain, limiter
 from ravenchain.blockchain import Blockchain
 from ravenchain.transaction import Transaction
 
@@ -21,25 +21,29 @@ def get_blockchain():
 
 
 @transactionRouter.get("/transactions")
-async def get_all_transactions(blockchain: Blockchain = Depends(get_blockchain)):
-    transactions = []
-    for block in blockchain.chain:
-        transactions.extend(block.transactions)
-    return transactions
+@limiter.limit("30/minute")
+async def get_all_transactions(request: Request, blockchain: Blockchain = Depends(get_blockchain)):
+    try:
+        return blockchain.get_pending_transactions()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @transactionRouter.post("/transactions")
+@limiter.limit("10/minute")  # Lower limit for creating transactions
 async def create_transaction(
-    request: CreateTransactionRequest, blockchain: Blockchain = Depends(get_blockchain)
+    request: Request,
+    tx_request: CreateTransactionRequest,
+    blockchain: Blockchain = Depends(get_blockchain)
 ):
     try:
         transaction = Transaction(
-            request.sender_address,
-            request.recipient_address,
-            request.amount,
-            request.sender_private_key,
+            tx_request.sender_address,
+            tx_request.recipient_address,
+            tx_request.amount
         )
-        blockchain.add_transaction_to_pool(transaction)
-        return {"message": "Transaction added to the pool"}
+        transaction.sign_transaction(tx_request.sender_private_key)
+        blockchain.add_pending_transaction(transaction)
+        return {"message": "Transaction added successfully"}
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))

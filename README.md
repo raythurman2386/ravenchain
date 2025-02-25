@@ -65,6 +65,7 @@ ravenchain/
 ├── Dockerfile            # Docker build file
 ├── docker-compose.yml    # Docker services config
 └── requirements.txt      # Python dependencies
+```
 
 ## 🚀 Quick Start
 
@@ -143,7 +144,7 @@ docker-compose run --rm ravenchain pytest --cov=ravenchain
   - [x] Wallet endpoints
   - [x] Mining endpoints
 - [x] API documentation with Swagger/OpenAPI
-- [ ] Request rate limiting
+- [x] Request rate limiting
 - [ ] API authentication system
 
 ### Phase 3: Networking & Distribution

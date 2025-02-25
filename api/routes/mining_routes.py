@@ -1,5 +1,5 @@
-from fastapi import APIRouter, Depends, HTTPException
-from api.dependencies import logger, get_blockchain
+from fastapi import APIRouter, Depends, HTTPException, Request
+from api.dependencies import logger, get_blockchain, limiter
 from ravenchain.blockchain import Blockchain
 from pydantic import BaseModel
 
@@ -12,9 +12,10 @@ miningRouter = APIRouter()
 
 
 @miningRouter.post("/mine")
-async def mine_block(request: MiningRequest, blockchain: Blockchain = Depends(get_blockchain)):
+@limiter.limit("5/minute")  # Strict limit for mining operations
+async def mine_block(request: Request, mining_request: MiningRequest, blockchain: Blockchain = Depends(get_blockchain)):
     try:
-        blockchain.mine_pending_transactions(request.miner_address)
+        blockchain.mine_pending_transactions(mining_request.miner_address)
         return {"message": "Block mined successfully"}
     except Exception as e:
         logger.error(f"Error mining block: {str(e)}")
