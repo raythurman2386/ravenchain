@@ -15,7 +15,7 @@ setup(
         "python-jose[cryptography]>=3.3.0",
         "passlib[bcrypt]>=1.7.4",
         "slowapi>=0.1.9",
-        "pydantic>=2.1.1"
+        "pydantic>=2.1.1",
     ],
     extras_require={
         "test": [
