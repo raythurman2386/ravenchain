@@ -18,6 +18,7 @@ setup(
         "pydantic>=2.1.1",
         "pydantic-core>=2.7.0",
         "pydantic[email]>=2.1.1",
+        "python-multipart>=0.0.20",
     ],
     extras_require={
         "test": [
