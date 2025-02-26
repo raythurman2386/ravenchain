@@ -128,7 +128,7 @@ docker-compose run --rm ravenchain pytest --cov=ravenchain
 
 ## 🎯 Roadmap
 
-### Phase 1: Core Infrastructure Enhancement (Current)
+### Phase 1: Core Infrastructure Enhancement
 - [x] Basic blockchain implementation
 - [x] Wallet management system
 - [x] Command-line interface
@@ -136,7 +136,7 @@ docker-compose run --rm ravenchain pytest --cov=ravenchain
 - [x] Unit test coverage
 - [x] Documentation improvements
 
-### Phase 2: Data Persistence & API (Next)
+### Phase 2: Data Persistence & API 
 - [x] Implement PostgreSQL for blockchain storage
 - [x] Design and implement FastAPI REST API
   - [x] Block endpoints
@@ -145,9 +145,9 @@ docker-compose run --rm ravenchain pytest --cov=ravenchain
   - [x] Mining endpoints
 - [x] API documentation with Swagger/OpenAPI
 - [x] Request rate limiting
-- [ ] API authentication system
+- [x] API authentication system
 
-### Phase 3: Networking & Distribution
+### Phase 3: Networking & Distribution (Current)
 - [ ] P2P network implementation
   - [ ] Node discovery protocol
   - [ ] Block synchronization
@@ -156,7 +156,7 @@ docker-compose run --rm ravenchain pytest --cov=ravenchain
 - [ ] Network state management
 - [ ] Peer management system
 
-### Phase 4: Smart Contracts & Advanced Features
+### Phase 4: Smart Contracts & Advanced Features (Next)
 - [ ] Basic smart contract engine
 - [ ] Contract deployment system
 - [ ] Standard contract templates
@@ -185,20 +185,41 @@ docker-compose run --rm ravenchain pytest --cov=ravenchain
 pytest tests/
 ```
 
-## 📖 API Documentation (Planned)
+## 📖 API Documentation
 
 The REST API will provide the following endpoints:
 
 ```
+# Authentication Endpoints
+POST   /api/v1/auth/register       # Register a new user
+POST   /api/v1/auth/login          # Login and get tokens
+POST   /api/v1/auth/refresh        # Refresh access token
+GET    /api/v1/auth/me             # Get current user info
+PUT    /api/v1/auth/me             # Update current user info
+
+# Admin Endpoints
+GET    /api/v1/admin/users         # List all users (admin only)
+GET    /api/v1/admin/users/{id}    # Get user details (admin only)
+PUT    /api/v1/admin/users/{id}    # Update user (admin only) 
+DELETE /api/v1/admin/users/{id}    # Delete user (admin only)
+
+# Block Endpoints
 GET    /api/v1/blocks              # List blocks
 GET    /api/v1/blocks/{hash}       # Get block details
+GET    /api/v1/blocks/latest       # Get latest block
+
+# Transaction Endpoints
 GET    /api/v1/transactions        # List transactions
 POST   /api/v1/transactions        # Create transaction
+
+# Wallet Endpoints
 GET    /api/v1/wallets/{address}   # Get wallet info
+
+# Mining Endpoints
 POST   /api/v1/mine                # Mine new block
 ```
 
-Detailed API documentation will be available via Swagger UI at `/docs`.
+Detailed API documentation is available via Swagger UI at `/docs`.
 
 ## 🤝 Contributing
 

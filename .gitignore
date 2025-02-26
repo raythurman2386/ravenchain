@@ -56,3 +56,4 @@ wallets.dat
 # Coverage
 coverage.xml
 htmlcov/
+test.db

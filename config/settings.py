@@ -1,5 +1,6 @@
 import os
 from dotenv import load_dotenv
+import secrets
 
 load_dotenv()
 MINING_DIFFICULTY = 4
@@ -28,6 +29,11 @@ class Settings:
     DB_USER = os.getenv("RAVENCHAIN_DB_USER", "postgres")
     DB_PASS = os.getenv("RAVENCHAIN_DB_PASS", "admin")
     DATABASE_URL = f"postgresql://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+    
+    # JWT Settings
+    SECRET_KEY: str = os.getenv("JWT_SECRET_KEY", secrets.token_urlsafe(32))
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 30))
+    REFRESH_TOKEN_EXPIRE_DAYS: int = int(os.getenv("REFRESH_TOKEN_EXPIRE_DAYS", 7))
 
 
 settings = Settings()

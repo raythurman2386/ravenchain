@@ -1,14 +1,15 @@
 from contextlib import asynccontextmanager
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, HTTPException, Request, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import inspect, text
-from api.routes import block_routes, mining_routes, transaction_routes, wallet_routes
+from api.routes import block_routes, mining_routes, transaction_routes, wallet_routes, auth_routes
 from api.database.models import Base
 from api.dependencies import engine, logger, initialize_blockchain, limiter
 from config.settings import settings
 from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
 from slowapi import _rate_limit_exceeded_handler
+from api.auth.utils import get_current_active_user
 
 
 @asynccontextmanager
@@ -63,9 +64,28 @@ async def health_check(request: Request):
     return {"status": "healthy"}
 
 
-app.include_router(block_routes.blockRouter, prefix=settings.API_PREFIX, tags=["blocks"])
-app.include_router(mining_routes.miningRouter, prefix=settings.API_PREFIX, tags=["mining"])
+app.include_router(auth_routes.authRouter, prefix=settings.API_PREFIX, tags=["auth"])
 app.include_router(
-    transaction_routes.transactionRouter, prefix=settings.API_PREFIX, tags=["transactions"]
+    block_routes.blockRouter, 
+    prefix=settings.API_PREFIX, 
+    tags=["blocks"],
+    dependencies=[Depends(get_current_active_user)]
 )
-app.include_router(wallet_routes.walletRouter, prefix=settings.API_PREFIX, tags=["wallets"])
+app.include_router(
+    mining_routes.miningRouter, 
+    prefix=settings.API_PREFIX, 
+    tags=["mining"],
+    dependencies=[Depends(get_current_active_user)]
+)
+app.include_router(
+    transaction_routes.transactionRouter, 
+    prefix=settings.API_PREFIX, 
+    tags=["transactions"],
+    dependencies=[Depends(get_current_active_user)]
+)
+app.include_router(
+    wallet_routes.walletRouter, 
+    prefix=settings.API_PREFIX, 
+    tags=["wallets"],
+    dependencies=[Depends(get_current_active_user)]
+)
