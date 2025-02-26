@@ -57,12 +57,12 @@ def authenticate_user(db: Session, username: str, password: str) -> Union[User, 
 def create_token(data: Dict[str, Any], expires_delta: Optional[timedelta] = None) -> str:
     """Create a JWT token"""
     to_encode = data.copy()
-    
+
     if expires_delta:
         expire = datetime.now(timezone.utc) + expires_delta
     else:
         expire = datetime.now(timezone.utc) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-        
+
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
@@ -70,23 +70,16 @@ def create_token(data: Dict[str, Any], expires_delta: Optional[timedelta] = None
 
 def create_access_token(data: Dict[str, Any]) -> str:
     """Create an access token"""
-    return create_token(
-        data, 
-        expires_delta=timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    )
+    return create_token(data, expires_delta=timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES))
 
 
 def create_refresh_token(data: Dict[str, Any]) -> str:
     """Create a refresh token"""
-    return create_token(
-        data,
-        expires_delta=timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS)
-    )
+    return create_token(data, expires_delta=timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS))
 
 
 async def get_current_user(
-    token: str = Depends(oauth2_scheme),
-    db: Session = Depends(get_db)
+    token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)
 ) -> User:
     """Get the current authenticated user from the token"""
     credentials_exception = HTTPException(
@@ -94,7 +87,7 @@ async def get_current_user(
         detail="Could not validate credentials",
         headers={"WWW-Authenticate": "Bearer"},
     )
-    
+
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         username: str = payload.get("sub")
@@ -102,37 +95,29 @@ async def get_current_user(
             raise credentials_exception
     except JWTError:
         raise credentials_exception
-        
+
     user = get_user(db, username=username)
     if user is None:
         raise credentials_exception
-        
+
     # Update last login time
     user.last_login = datetime.now(timezone.utc)
     db.commit()
-    
+
     return user
 
 
-async def get_current_active_user(
-    current_user: User = Depends(get_current_user)
-) -> User:
+async def get_current_active_user(current_user: User = Depends(get_current_user)) -> User:
     """Get the current active user"""
     if not current_user.is_active:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN, 
-            detail="Inactive user"
-        )
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Inactive user")
     return current_user
 
 
-async def get_admin_user(
-    current_user: User = Depends(get_current_active_user)
-) -> User:
+async def get_admin_user(current_user: User = Depends(get_current_active_user)) -> User:
     """Check if the current user is an admin"""
     if not current_user.is_admin:
         raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Admin privileges required"
+            status_code=status.HTTP_403_FORBIDDEN, detail="Admin privileges required"
         )
     return current_user

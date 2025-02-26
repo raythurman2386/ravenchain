@@ -66,26 +66,26 @@ async def health_check(request: Request):
 
 app.include_router(auth_routes.authRouter, prefix=settings.API_PREFIX, tags=["auth"])
 app.include_router(
-    block_routes.blockRouter, 
-    prefix=settings.API_PREFIX, 
+    block_routes.blockRouter,
+    prefix=settings.API_PREFIX,
     tags=["blocks"],
-    dependencies=[Depends(get_current_active_user)]
+    dependencies=[Depends(get_current_active_user)],
 )
 app.include_router(
-    mining_routes.miningRouter, 
-    prefix=settings.API_PREFIX, 
+    mining_routes.miningRouter,
+    prefix=settings.API_PREFIX,
     tags=["mining"],
-    dependencies=[Depends(get_current_active_user)]
+    dependencies=[Depends(get_current_active_user)],
 )
 app.include_router(
-    transaction_routes.transactionRouter, 
-    prefix=settings.API_PREFIX, 
+    transaction_routes.transactionRouter,
+    prefix=settings.API_PREFIX,
     tags=["transactions"],
-    dependencies=[Depends(get_current_active_user)]
+    dependencies=[Depends(get_current_active_user)],
 )
 app.include_router(
-    wallet_routes.walletRouter, 
-    prefix=settings.API_PREFIX, 
+    wallet_routes.walletRouter,
+    prefix=settings.API_PREFIX,
     tags=["wallets"],
-    dependencies=[Depends(get_current_active_user)]
+    dependencies=[Depends(get_current_active_user)],
 )
