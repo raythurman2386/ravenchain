@@ -12,7 +12,8 @@ setup(
         "sqlalchemy>=2.0.38",
         "alembic>=1.13.0",
         "psycopg2-binary>=2.9.10",
-        "python-jose[cryptography]>=3.3.0" "passlib[bcrypt]>=1.7.4",
+        "python-jose[cryptography]>=3.3.0",
+        "passlib[bcrypt]>=1.7.4",
         "slowapi>=0.1.9",
     ],
     extras_require={

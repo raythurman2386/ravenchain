@@ -16,3 +16,4 @@ python-jose[cryptography]>=3.3.0  # For JWT tokens
 passlib[bcrypt]>=1.7.4  # For password hashing
 pydantic>=2.1.1  # For data validation
 pytest-fastapi-deps>=0.2.3
+python-multipart>=0.0.20
