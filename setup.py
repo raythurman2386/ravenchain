@@ -19,6 +19,7 @@ setup(
             "pytest-cov>=4.1.0",
             "pytest-asyncio>=0.23.0",
             "httpx>=0.26.0",  # For testing FastAPI endpoints
+            "python-dotenv>=1.0.0",  # For loading environment variables
         ],
         "dev": [
             "black>=25.0.0",
